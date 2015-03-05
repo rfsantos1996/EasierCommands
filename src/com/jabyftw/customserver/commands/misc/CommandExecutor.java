@@ -1,12 +1,11 @@
 package com.jabyftw.customserver.commands.misc;
 
-import com.jabyftw.customserver.Main;
-import com.jabyftw.customserver.jogador.Jogador;
-import com.jabyftw.customserver.util.AbstractObject;
-import com.jabyftw.customserver.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,18 +14,21 @@ import java.util.LinkedList;
 /**
  * Created by Rafael on 03/03/2015.
  */
-public class CommandExecutor extends AbstractObject implements org.bukkit.command.CommandExecutor {
+public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 
-    protected CommandExecutor(final String name, final String description, final String usageMessage) {
+    private final JavaPlugin plugin;
+
+    protected CommandExecutor(final JavaPlugin plugin, final String name, final String description, final String usageMessage) {
+        this.plugin = plugin;
         final org.bukkit.command.CommandExecutor executor = this;
-        main.getServer().getScheduler().runTaskLater(main, new Runnable() {
+        Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
                 {
-                    ((PluginCommand) main.getCommand(name)
+                    ((PluginCommand) plugin.getCommand(name)
                             .setDescription(description)
                             .setUsage(usageMessage)
-                            .setPermissionMessage(Main.getMessage("no-permission")))
+                                    //.setPermissionMessage(Main.getMessage("no-permission"))) // You can change this message if you want
                             .setExecutor(executor);
                 }
             }
@@ -48,14 +50,12 @@ public class CommandExecutor extends AbstractObject implements org.bukkit.comman
             }
         }
 
-        Jogador jogador = main.getJogador(commandSender.getName(), false);
         Method mostNear = null;
         int nearValue = Integer.MAX_VALUE;
         LinkedList<Object> objects = new LinkedList<>();
 
         for(Method currentMethod : getClass().getDeclaredMethods()) {
             if(currentMethod.isAnnotationPresent(CommandHandler.class)) {
-                boolean isJogadorNeeded = false;
 
                 CommandHandler declaredAnnotation = currentMethod.getDeclaredAnnotation(CommandHandler.class);
                 String additionalPermission = declaredAnnotation.additionalPermission();
@@ -63,8 +63,10 @@ public class CommandExecutor extends AbstractObject implements org.bukkit.comman
                 if(additionalPermission.length() == 0 || commandSender.hasPermission(additionalPermission)) {
                     Class<?>[] requiredArguments = currentMethod.getParameterTypes();
 
+                    boolean isPlayerNeeded = false;
+
                     if(requiredArguments.length > 0 && currentMethod.getReturnType().isAssignableFrom(HandleResponse.class) &&
-                            (requiredArguments[0].isAssignableFrom(CommandSender.class) || (isJogadorNeeded = requiredArguments[0].isAssignableFrom(Jogador.class)))) {
+                            ((isPlayerNeeded = requiredArguments[0].isAssignableFrom(Player.class)) || requiredArguments[0].isAssignableFrom(CommandSender.class))) {
 
                         {
                             LinkedList<Object> objectList = new LinkedList<>();
@@ -73,18 +75,19 @@ public class CommandExecutor extends AbstractObject implements org.bukkit.comman
                                 continue; // Not enough arguments
                             }
 
-                            if(isJogadorNeeded && jogador == null) {
-                                continue; // Sender not compatible
+                            Player player;
+                            if(isPlayerNeeded && !(commandSender instanceof Player)) {
+                                continue; // Can't handle this command on console
+                            } else {
+                                player = (Player) commandSender;
                             }
 
                             {
-                                objectList.add(isJogadorNeeded ? jogador : commandSender);
+                                objectList.add(isPlayerNeeded ? player : commandSender);
                             }
 
                             Integer integer = doLoop(objectList, requiredArguments, objectArguments);
 
-                            /*main.getLogger().info("MostNear: " + (mostNear == null ? "null" : mostNear.getName()) +
-                                    " method/given parameters: " + currentMethod.getParameterCount() + "/" + objectList.size() + " integer: " + integer);*/
                             if(integer != null && integer <= nearValue) {
                                 mostNear = currentMethod;
                                 nearValue = integer;
@@ -103,14 +106,14 @@ public class CommandExecutor extends AbstractObject implements org.bukkit.comman
         }
 
         if(mostNear == null) {
-            commandSender.sendMessage(Util.getColoredMessage(command.getUsage()));
+            commandSender.sendMessage(command.getUsage());
         } else {
             try {
                 HandleResponse handleResponse = (HandleResponse) mostNear.invoke(this, objects.toArray());
 
                 switch(handleResponse) {
                     case RETURN_HELP:
-                        commandSender.sendMessage(Util.getColoredMessage(command.getUsage()));
+                        commandSender.sendMessage(command.getUsage());
                         break;
                     case RETURN_NO_PERMISSION:
                         commandSender.sendMessage(command.getPermissionMessage());
