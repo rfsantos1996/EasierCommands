@@ -1,4 +1,4 @@
-package com.jabyftw.customserver.commands.misc;
+package com.jabyftw.easiercommands;
 
 /**
  * Created by Rafael on 02/03/2015.

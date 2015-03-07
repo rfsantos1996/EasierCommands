@@ -1,4 +1,4 @@
-package com.jabyftw.customserver.commands.misc;
+package com.jabyftw.easiercommands;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;

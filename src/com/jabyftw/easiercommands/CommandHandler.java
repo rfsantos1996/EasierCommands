@@ -1,4 +1,4 @@
-package com.jabyftw.customserver.commands.misc;
+package com.jabyftw.easiercommands;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

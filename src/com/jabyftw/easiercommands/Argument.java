@@ -1,4 +1,4 @@
-package com.jabyftw.customserver.commands.misc;
+package com.jabyftw.easiercommands;
 
 import java.util.HashMap;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package com.jabyftw.customserver.commands.misc;
+package com.jabyftw.easiercommands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -27,8 +27,8 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
                 {
                     ((PluginCommand) plugin.getCommand(name)
                             .setDescription(description)
-                            .setUsage(usageMessage)
-                                    //.setPermissionMessage(Main.getMessage("no-permission"))) // You can change this message if you want
+                            .setUsage(usageMessage))
+                            //.setPermissionMessage(Main.getMessage("no-permission"))) // You can change this message if you want
                             .setExecutor(executor);
                 }
             }
@@ -63,7 +63,7 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
                 if(additionalPermission.length() == 0 || commandSender.hasPermission(additionalPermission)) {
                     Class<?>[] requiredArguments = currentMethod.getParameterTypes();
 
-                    boolean isPlayerNeeded = false;
+                    boolean isPlayerNeeded;
 
                     if(requiredArguments.length > 0 && currentMethod.getReturnType().isAssignableFrom(HandleResponse.class) &&
                             ((isPlayerNeeded = requiredArguments[0].isAssignableFrom(Player.class)) || requiredArguments[0].isAssignableFrom(CommandSender.class))) {
@@ -75,10 +75,11 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
                                 continue; // Not enough arguments
                             }
 
-                            Player player;
+                            Player player = null;
+
                             if(isPlayerNeeded && !(commandSender instanceof Player)) {
                                 continue; // Can't handle this command on console
-                            } else {
+                            } else if(isPlayerNeeded) {
                                 player = (Player) commandSender;
                             }
 
