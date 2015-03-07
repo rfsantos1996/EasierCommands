@@ -10,6 +10,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionType;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by Rafael on 20/02/2015.
  */
@@ -142,7 +147,7 @@ public enum ArgumentType {
         World mostEqual = null;
         int equality = 2;
 
-        for(World world : Main.getInstance().getServer().getWorlds()) {
+        for(World world : Bukkit.getServer().getWorlds()) {
             int equalityOfWords = equalityOfWords(world.getName(), string);
 
             if(equalityOfWords >= equality) {
@@ -299,13 +304,12 @@ public enum ArgumentType {
      * Some util for word equality
      */
 
-    public static boolean matchArguments(String argument, String... availableOptions) {
-        for(String availableOption : availableOptions) {
-            if(argument.equalsIgnoreCase(availableOption))
-                return true;
-        }
+    public static int getEqualityOfNames(char[] firstWord, char[] secondWord) {
+        if(firstWord.length > secondWord.length)  // do not accept search being bigger than player name. Jaby (4) < (5) Jaby2
+            return 0;
 
-        return false;
+        int equality = equalityOfChars(firstWord, secondWord);
+        return secondWord.length > firstWord.length ? equality - (secondWord.length - firstWord.length) : equality;
     }
 
     public static int equalityOfWordsIgnoringLength(String sentence1, String sentence2) {

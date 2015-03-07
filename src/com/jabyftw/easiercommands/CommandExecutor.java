@@ -16,10 +16,7 @@ import java.util.LinkedList;
  */
 public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 
-    private final JavaPlugin plugin;
-
     protected CommandExecutor(final JavaPlugin plugin, final String name, final String description, final String usageMessage) {
-        this.plugin = plugin;
         final org.bukkit.command.CommandExecutor executor = this;
         Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
