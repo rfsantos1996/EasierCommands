@@ -24,7 +24,14 @@ public enum ArgumentType {
     WORLD(World.class),
 
     TIME_DIFFERENCE(Long.class),
-    NUMBER(Number.class), // Because of this, you need to use Double.class, Integer.class, etc instead of int, double, float
+    //NUMBER(Number.class), // Invalid, you couldn't use other values than double o.o
+
+    INTEGER(int.class),
+    LONG(long.class),
+    SHORT(short.class),
+    BYTE(byte.class),
+    FLOAT(float.class),
+    DOUBLE(double.class),
 
     ENTITY_TYPE(EntityType.class),
     POTION_TYPE(PotionType.class),
@@ -99,8 +106,32 @@ public enum ArgumentType {
         }
 
         { // Check for numbers
-            if(NumberUtils.isNumber(string))
-                argument.addArgumentType(NUMBER, Double.parseDouble(string));
+            if(NumberUtils.isNumber(string)) {
+                try {
+                    argument.addArgumentType(DOUBLE, Double.valueOf(string));
+                } catch(NumberFormatException ignored) {
+                }
+                try {
+                    argument.addArgumentType(FLOAT, Float.valueOf(string));
+                } catch(NumberFormatException ignored) {
+                }
+                try {
+                    argument.addArgumentType(INTEGER, Integer.valueOf(string));
+                } catch(NumberFormatException ignored) {
+                }
+                try {
+                    argument.addArgumentType(LONG, Long.valueOf(string));
+                } catch(NumberFormatException ignored) {
+                }
+                try {
+                    argument.addArgumentType(SHORT, Short.valueOf(string));
+                } catch(NumberFormatException ignored) {
+                }
+                try {
+                    argument.addArgumentType(BYTE, Byte.valueOf(string));
+                } catch(NumberFormatException ignored) {
+                }
+            }
         }
 
         { // Check for date difference
