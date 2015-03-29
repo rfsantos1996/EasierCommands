@@ -7,6 +7,6 @@ public enum HandleResponse {
 
     RETURN_HELP,
     RETURN_NO_PERMISSION,
-    RETURN
+    RETURN_TRUE
 
 }

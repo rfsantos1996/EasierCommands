@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CommandHandler {
 
+    SenderType senderType() default SenderType.BOTH;
+
     String additionalPermission() default "";
 
 }

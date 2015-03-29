@@ -1,6 +1,7 @@
 package com.jabyftw.easiercommands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
 public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 
     private static final boolean DEBUG = false;
-    private static final Class<?> PLAYER_CLASS = Jogador.class; // TODO change here for your custom player class
+    private static final Class<?> PLAYER_CLASS = Player.class; // TODO change here for your custom player class
     private static String TITLE = "";
 
     private static final Logger logger = Bukkit.getLogger();

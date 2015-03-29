@@ -1,10 +1,7 @@
 package com.jabyftw.easiercommands;
 
 import org.apache.commons.lang.math.NumberUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -35,6 +32,7 @@ public enum ArgumentType {
 
     ENTITY_TYPE(EntityType.class),
     POTION_TYPE(PotionType.class),
+    WEATHER_TYPE(WeatherType.class),
     MATERIAL(Material.class),
 
     PLAYER_NAME(Player.class),
@@ -82,6 +80,12 @@ public enum ArgumentType {
             EntityType entityType = parseToEntityType(string);
             if(entityType != null)
                 argument.addArgumentType(ENTITY_TYPE, entityType);
+        }
+
+        { // Check for weather types
+            WeatherType weatherType = parseToWeatherType(string);
+            if(weatherType != null)
+                argument.addArgumentType(WEATHER_TYPE, weatherType);
         }
 
         { // Check for potion types
@@ -211,12 +215,29 @@ public enum ArgumentType {
         EntityType mostEqual = null;
         int equality = 2;
 
-        for(EntityType material : EntityType.values()) {
+        for(EntityType entityType : EntityType.values()) {
             boolean useUnderline = string.contains("_");
 
-            int equalityOfWords = equalityOfWords(material.name().replaceAll("_", (useUnderline ? "" : "_")), string);
+            int equalityOfWords = equalityOfWords(entityType.name().replaceAll("_", (useUnderline ? "" : "_")), string);
             if(equalityOfWords >= equality) {
-                mostEqual = material;
+                mostEqual = entityType;
+                equality = equalityOfWords;
+            }
+        }
+
+        return mostEqual;
+    }
+
+    public static WeatherType parseToWeatherType(String string) {
+        WeatherType mostEqual = null;
+        int equality = 2;
+
+        for(WeatherType weatherType : WeatherType.values()) {
+            boolean useUnderline = string.contains("_");
+
+            int equalityOfWords = equalityOfWords(weatherType.name().replaceAll("_", (useUnderline ? "" : "_")), string);
+            if(equalityOfWords >= equality) {
+                mostEqual = weatherType;
                 equality = equalityOfWords;
             }
         }
